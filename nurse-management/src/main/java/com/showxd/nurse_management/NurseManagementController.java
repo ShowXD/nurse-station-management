@@ -1,13 +1,13 @@
 package com.showxd.nurse_management;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
-@RestController
+@Controller
 public class NurseManagementController {
 
-    @RequestMapping("/index")
+    @GetMapping("/")
     public String index() {
-        return "Nurse Management System is running!";
+        return "index";
     }
 }
