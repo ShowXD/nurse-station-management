@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>新增站點</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+
+    .top-buttons {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1.1em;
+      border: 1px solid #999;
+      background-color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .form-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 1.1em;
+      width: 100px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 1.1em;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .message {
+      margin-top: 20px;
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-buttons">
+    <button onclick="location.href='/index.html'">返回</button>
+    <button id="submitBtn">新增</button>
+  </div>
+
+  <div class="form-group">
+    <label for="stationName">站點名稱：</label>
+    <input type="text" id="stationName" placeholder="請輸入站點名稱" />
+  </div>
+
+  <div class="message" id="messageArea"></div>
+
+  <script>
+    $('#submitBtn').click(function () {
+      const stationName = $('#stationName').val().trim();
+      if (!stationName) {
+        $('#messageArea').text('請輸入站點名稱').css('color', 'red');
+        return;
+      }
+
+      // 模擬送出：之後會接上後端 API
+      $('#messageArea').text('站點新增成功').css('color', 'green');
+      $('#stationName').val('');
+    });
+  </script>
+
+</body>
+</html>

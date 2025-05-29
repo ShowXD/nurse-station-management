@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class NurseManagementController {
 
     @GetMapping("/")
-    public String index() {
-        return "index";
+    public String redirectToIndex() {
+        return "redirect:/index.html";
     }
 }
