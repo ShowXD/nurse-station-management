@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>站點詳細資料</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5faff;
+      color: #333;
+    }
+
+    .header {
+      background-color: #3498db;
+      color: white;
+      padding: 1rem;
+      position: relative;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      background-color: white;
+      color: #3498db;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .save-btn {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      background-color: white;
+      color: #3498db;
+      border: 2px solid white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 2rem;
+    }
+
+    .info {
+      margin-bottom: 2rem;
+    }
+
+    .info label {
+      font-weight: bold;
+      margin-right: 1rem;
+    }
+
+    .info input {
+      padding: 0.5rem;
+      width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .nurse-list {
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .nurse-list table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .nurse-list th, .nurse-list td {
+      border: 1px solid #ccc;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .nurse-list th {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .nurse-list td {
+      background-color: #f8fbff;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <button class="back-btn" onclick="history.back()">返回</button>
+    <h2 style="text-align: center;">站點詳細資料</h2>
+    <button class="save-btn">儲存變更</button>
+  </div>
+
+  <div class="container">
+    <div class="info">
+      <label for="stationName">站點名稱：</label>
+      <input type="text" id="stationName" value="內科病房">
+    </div>
+
+    <div class="nurse-list">
+      <h3 style="color: #3498db;">站點護士列表</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>員工編號</th>
+            <th>護士姓名</th>
+            <th>最後加入時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>N12345</td>
+            <td>王小美</td>
+            <td>2024-05-01</td>
+          </tr>
+          <tr>
+            <td>N12346</td>
+            <td>李志豪</td>
+            <td>2024-08-12</td>
+          </tr>
+          <tr>
+            <td>N12347</td>
+            <td>林宥辰</td>
+            <td>2025-01-20</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>

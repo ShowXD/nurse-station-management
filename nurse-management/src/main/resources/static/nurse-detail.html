@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>護士詳細資料</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5faff;
+      color: #333;
+    }
+
+    .header {
+      background-color: #3498db;
+      color: white;
+      padding: 1rem;
+      position: relative;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      background-color: white;
+      color: #3498db;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .save-btn {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      background-color: white;
+      color: #3498db;
+      border: 2px solid #3498db;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 2rem;
+    }
+
+    .info {
+      margin-bottom: 2rem;
+    }
+
+    .info label {
+      display: inline-block;
+      width: 100px;
+      font-weight: bold;
+    }
+
+    .info input {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 300px;
+    }
+
+    .stations {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .station-box {
+      flex: 1;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 1rem;
+      min-height: 300px;
+    }
+
+    .station-box h3 {
+      margin-top: 0;
+      color: #3498db;
+    }
+
+    .station-box ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .station-box li {
+      margin: 0.5rem 0;
+      padding: 0.3rem;
+      background-color: #e6f0fb;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .controls button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <button class="back-btn" onclick="history.back()">返回</button>
+    <h2 style="text-align: center;">護士詳細資料</h2>
+    <button class="save-btn">儲存變更</button>
+  </div>
+
+  <div class="container">
+    <div class="info">
+      <div><label>員工編號：</label><input type="text" value="N12345"></div><br>
+      <div><label>護士姓名：</label><input type="text" value="王小美"></div>
+    </div>
+
+    <div class="stations">
+      <!-- 已加入站點 -->
+      <div class="station-box">
+        <h3>已加入站點</h3>
+        <ul id="joined">
+          <li>內科病房</li>
+          <li>急診室</li>
+        </ul>
+      </div>
+
+      <!-- 控制按鈕 -->
+      <div class="controls">
+        <button onclick="moveSelected('#joined', '#available')">← 移除</button>
+        <button onclick="moveSelected('#available', '#joined')">加入 →</button>
+      </div>
+
+      <!-- 可分配站點 -->
+      <div class="station-box">
+        <h3>未加入站點</h3>
+        <ul id="available">
+          <li>加護病房</li>
+          <li>手術室</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 點選 li 切換選取狀態
+    document.querySelectorAll('ul li').forEach(li => {
+      li.addEventListener('click', () => {
+        li.classList.toggle('selected');
+        li.style.backgroundColor = li.classList.contains('selected') ? '#d0e7fb' : '#e6f0fb';
+      });
+    });
+
+    function moveSelected(fromSelector, toSelector) {
+      const from = document.querySelector(fromSelector);
+      const to = document.querySelector(toSelector);
+      const selected = from.querySelectorAll('.selected');
+      selected.forEach(li => {
+        li.classList.remove('selected');
+        li.style.backgroundColor = '#e6f0fb';
+        to.appendChild(li);
+      });
+    }
+  </script>
+
+</body>
+</html>

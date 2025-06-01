@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>新增護士</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 8px 16px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 60px auto 0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f8f8;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .assigned-list {
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 40px;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn back-btn" onclick="history.back()">返回</button>
+
+    <div class="container">
+        <h2>新增護士</h2>
+        <form id="add-nurse-form">
+            <div class="form-group">
+                <label for="nurse-id">員工編號</label>
+                <input type="text" id="nurse-id" name="nurse-id" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nurse-name">護士姓名</label>
+                <input type="text" id="nurse-name" name="nurse-name" required>
+            </div>
+
+            <div class="form-group">
+                <label>目前已分配站點</label>
+                <div class="assigned-list" id="current-stations">
+                    <!-- 未來由後端渲染資料 -->
+                    尚未分配
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="available-stations">可分配站點</label>
+                <select id="available-stations" name="available-stations" multiple>
+                    <option value="stationA">站點 A</option>
+                    <option value="stationB">站點 B</option>
+                    <option value="stationC">站點 C</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">新增</button>
+        </form>
+    </div>
+</body>
+</html>
