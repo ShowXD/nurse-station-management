@@ -1,4 +1,3 @@
-// src/main/java/com/showxd/nurse_management/controller/StationController.java
 package com.showxd.nurse_management.controller;
 
 import com.showxd.nurse_management.model.Station;

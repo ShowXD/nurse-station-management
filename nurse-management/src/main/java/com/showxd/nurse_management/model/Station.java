@@ -4,17 +4,20 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Station {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;                    // 自動遞增主鍵
+    private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name;                // 站點名稱，必填且唯一
+    private String name;
 
     @ManyToMany(mappedBy = "stations")
+    @JsonIgnore
     private Set<Nurse> nurses = new HashSet<>();
 
     public Station() {}
@@ -22,8 +25,6 @@ public class Station {
     public Station(String name) {
         this.name = name;
     }
-
-    // —— Getter & Setter —— //
 
     public Long getId() {
         return id;
