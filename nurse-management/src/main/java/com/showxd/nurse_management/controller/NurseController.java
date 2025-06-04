@@ -1,12 +1,14 @@
-// src/main/java/com/showxd/nurse_management/controller/NurseController.java
 package com.showxd.nurse_management.controller;
 
+import com.showxd.nurse_management.dto.NurseDto;
+import com.showxd.nurse_management.dto.StationDto;
 import com.showxd.nurse_management.model.Nurse;
 import com.showxd.nurse_management.service.NurseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/nurses")
@@ -18,6 +20,10 @@ public class NurseController {
         this.nurseService = nurseService;
     }
 
+    /**
+     * 取得所有護士
+     * GET /api/nurses/
+     */
     @GetMapping
     public List<Nurse> getAllNurses() {
         return nurseService.getAllNurses();
@@ -28,17 +34,30 @@ public class NurseController {
      * GET /api/nurses/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Nurse> getNurseById(@PathVariable Long id) {
+    public ResponseEntity<NurseDto> getNurseById(@PathVariable Long id) {
         return nurseService.getNurseById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+            .map(nurse -> {
+                List<StationDto> stationDtoList = nurse.getStations().stream()
+                    .map(st -> new StationDto(st.getId(), st.getName()))
+                    .collect(Collectors.toList());
+
+                NurseDto dto = new NurseDto(
+                    nurse.getId(),
+                    nurse.getEmployeeId(),
+                    nurse.getName(),
+                    nurse.getUpdatedAt(),
+                    stationDtoList
+                );
+
+                return ResponseEntity.ok(dto);
+            })
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
      * 新增護士
      * POST /api/nurses
      * Content-Type: application/json
-     * Body: { "employeeId": "...", "name": "..." }
      */
     @PostMapping
     public Nurse createNurse(@RequestBody Nurse nurse) {
@@ -48,26 +67,15 @@ public class NurseController {
     /**
      * 更新護士
      * PUT /api/nurses/{id}
-     * Body: { "employeeId": "...", "name": "...", "stations": [ ... ] }
      */
     @PutMapping("/{id}")
     public ResponseEntity<Nurse> updateNurse(
             @PathVariable Long id,
-            @RequestBody Nurse updatedNurse) {
+            @RequestBody NurseDto updatedDto) {
 
-        return nurseService.getNurseById(id)
-                .map(existing -> {
-                    existing.setEmployeeId(updatedNurse.getEmployeeId());
-                    existing.setName(updatedNurse.getName());
-                    existing.setStations(updatedNurse.getStations());
-                    Nurse saved = nurseService.saveNurse(existing);
-                    return ResponseEntity.ok(saved);
-                })
-                .orElseGet(() -> {
-                    updatedNurse.setId(id);
-                    Nurse saved = nurseService.saveNurse(updatedNurse);
-                    return ResponseEntity.ok(saved);
-                });
+        return nurseService.updateNurseWithDto(id, updatedDto)
+                             .map(ResponseEntity::ok)
+                             .orElse(ResponseEntity.notFound().build());
     }
 
     /**

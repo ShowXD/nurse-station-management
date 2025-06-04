@@ -1,10 +1,21 @@
 package com.showxd.nurse_management.model;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class, 
+  property = "id"
+)
 public class Nurse {
 
     @Id
@@ -24,6 +35,10 @@ public class Nurse {
         inverseJoinColumns = @JoinColumn(name = "station_id")
     )
     private Set<Station> stations = new HashSet<>();
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     public Nurse() {}
 
@@ -58,5 +73,12 @@ public class Nurse {
     }
     public void setStations(Set<Station> stations) {
         this.stations = stations;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
