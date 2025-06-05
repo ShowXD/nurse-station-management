@@ -34,33 +34,7 @@
 
 ## 專案檔案結構
 
-nurse‐station‐management/
-├─ src/
-│  ├─ main/
-│  │  ├─ java/com/showxd/nurse_management/
-│  │  │  ├─ controller/
-│  │  │  │   ├─ NurseController.java
-│  │  │  │   └─ StationController.java
-│  │  │  ├─ dto/
-│  │  │  │   └─ NurseDto.java
-│  │  │  │   └─ StationDto.java
-│  │  │  ├─ model/
-│  │  │  │   ├─ Nurse.java
-│  │  │  │   ├─ Station.java
-│  │  │  │   ├─ NurseStationAssignment.java
-│  │  │  │   └─ NurseStationId.java
-│  │  │  ├─ repository/
-│  │  │  │   ├─ NurseRepository.java
-│  │  │  │   ├─ StationRepository.java
-│  │  │  │   └─ NurseStationAssignmentRepository.java
-│  │  │  └─ service/
-│  │  │      └─ NurseService.java
-│  │  │      └─ StationService.java
-│  │  └─ resources/
-│  │      ├─ application.properties
-│  │      └─ static/
-│  └─ test/
-└─ pom.xml
+![架構圖](docs/screenshots/architecture.png)
 
 
 ## 核心 API 範例
