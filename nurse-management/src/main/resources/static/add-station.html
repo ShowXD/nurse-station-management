@@ -55,7 +55,7 @@
 <body>
 
   <div class="top-buttons">
-    <button onclick="location.href='/index.html'">返回</button>
+    <button onclick="location.href='station-list.html'">返回</button>
     <button id="submitBtn">新增</button>
   </div>
 
@@ -69,14 +69,36 @@
   <script>
     $('#submitBtn').click(function () {
       const stationName = $('#stationName').val().trim();
+      const $messageArea = $('#messageArea');
+
+      // 檢查輸入
       if (!stationName) {
-        $('#messageArea').text('請輸入站點名稱').css('color', 'red');
+        $messageArea.text('請輸入站點名稱').css('color', 'red');
         return;
       }
 
-      // 模擬送出：之後會接上後端 API
-      $('#messageArea').text('站點新增成功').css('color', 'green');
-      $('#stationName').val('');
+      // 按下去後顯示「送出中...」狀態
+      $messageArea.text('送出中…').css('color', 'black');
+      $('#submitBtn').prop('disabled', true).text('新增中…');
+
+      // 呼叫後端 API：POST /api/stations
+      $.ajax({
+        url: '/api/stations',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ name: stationName })
+      })
+      .done(function () {
+        alert('站點新增成功');
+        window.location.href = 'station-list.html';
+      })
+      .fail(function (jqXHR, textStatus, errorThrown) {
+        $messageArea.text('新增失敗，請稍後重試').css('color', 'red');
+        console.error('POST /api/stations 錯誤：', textStatus, errorThrown);
+      })
+      .always(function () {
+        $('#submitBtn').prop('disabled', false).text('新增');
+      });
     });
   </script>
 
