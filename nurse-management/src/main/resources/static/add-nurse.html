@@ -1,107 +1,421 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>新增護士</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <title>新增護士</title>
 
-        .back-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 8px 16px;
-        }
+  <!-- jQuery (必須) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        .container {
-            max-width: 600px;
-            margin: 60px auto 0;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #f8f8f8;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
+  <style>
+    /* ---------- 全局變數與基本樣式 ---------- */
+    :root {
+      --primary-color: #3498db;
+      --primary-light: #e6f0fb;
+      --primary-lighter: #c8e6ff;
+      --primary-hover: #d0e7fb;
+      --primary-hover2: #aad4fa;
+      --bg-page: #f5faff;
+      --text-color: #333;
+      --border-gray: #ccc;
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+      --font-sans: "Segoe UI", sans-serif;
+      --border-radius: 5px;
+      --border-radius-lg: 10px;
+      --spacing: 1rem;
+      --spacing-sm: 0.5rem;
+      --spacing-md: 1.5rem;
+    }
 
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-color);
+    }
 
-        .assigned-list {
-            background-color: #fff;
-            padding: 10px;
-            border: 1px solid #ccc;
-            min-height: 40px;
-        }
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
 
-        .btn-submit {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    ul {
+      list-style: none;
+    }
 
-        .btn-submit:hover {
-            background-color: #2980b9;
-        }
-    </style>
+    /* ---------- Header 樣式 ---------- */
+    header {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: var(--spacing) var(--spacing-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h2 {
+      font-size: 1.25rem;
+      flex: 1;
+      text-align: center;
+    }
+
+    .btn {
+      background-color: #fff;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--border-radius);
+      font-weight: bold;
+      transition: background-color 0.2s, opacity 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn:hover:not(:disabled) {
+      background-color: var(--primary-light);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn--back {
+      border: none;
+    }
+
+    .btn--back:hover:not(:disabled) {
+      background-color: rgba(255,255,255,0.8);
+    }
+
+    /* ---------- 主容器 & 輸入框 ---------- */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--spacing-md);
+    }
+
+    .info-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-item label {
+      font-weight: bold;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .info-item input[type="text"] {
+      padding: var(--spacing-sm);
+      border: 1px solid var(--border-gray);
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      width: 100%;
+      background-color: #fff;
+    }
+
+    /* ---------- 雙欄站點列表 (Dual-List) ---------- */
+    .stations {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
+
+    .station-box {
+      flex: 1 1 300px;
+      background-color: #fff;
+      border: 1px solid var(--border-gray);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing);
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .station-box h3 {
+      font-size: 1.1rem;
+      text-align: center;
+      margin-bottom: var(--spacing);
+      color: var(--primary-color);
+    }
+
+    .station-box ul {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .station-box li {
+      margin-bottom: var(--spacing-sm);
+      padding: var(--spacing-sm);
+      background-color: var(--primary-light);
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background-color 0.2s, opacity 0.2s;
+      cursor: pointer;
+    }
+
+    .station-box li:hover {
+      background-color: var(--primary-hover);
+    }
+
+    #joined li {
+      background-color: var(--primary-lighter);
+    }
+    #joined li:hover {
+      background-color: var(--primary-hover2);
+    }
+
+    .station-box ul::-webkit-scrollbar {
+      width: 6px;
+    }
+    .station-box ul::-webkit-scrollbar-thumb {
+      background-color: var(--primary-color);
+      border-radius: 3px;
+    }
+
+    .message {
+      margin-top: 10px;
+      font-size: 0.95em;
+    }
+    .message.error {
+      color: red;
+    }
+    .message.success {
+      color: green;
+    }
+
+    /* ---------- 送出按鈕 ---------- */
+    .btn-submit {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .btn-submit:hover:not(:disabled) {
+      background-color: #2980b9;
+    }
+    .btn-submit:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      header h2 {
+        margin: var(--spacing-sm) 0;
+      }
+      .stations {
+        flex-direction: column;
+      }
+      .station-box {
+        min-height: 200px;
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <header>
+    <button class="btn btn--back" id="btnBack">返回</button>
+    <h2>新增護士</h2>
+    <button class="btn" id="btnSave">新增</button>
+  </header>
 
-    <button class="btn back-btn" onclick="history.back()">返回</button>
-
-    <div class="container">
-        <h2>新增護士</h2>
-        <form id="add-nurse-form">
-            <div class="form-group">
-                <label for="nurse-id">員工編號</label>
-                <input type="text" id="nurse-id" name="nurse-id" required>
-            </div>
-
-            <div class="form-group">
-                <label for="nurse-name">護士姓名</label>
-                <input type="text" id="nurse-name" name="nurse-name" required>
-            </div>
-
-            <div class="form-group">
-                <label>目前已分配站點</label>
-                <div class="assigned-list" id="current-stations">
-                    <!-- 未來由後端渲染資料 -->
-                    尚未分配
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="available-stations">可分配站點</label>
-                <select id="available-stations" name="available-stations" multiple>
-                    <option value="stationA">站點 A</option>
-                    <option value="stationB">站點 B</option>
-                    <option value="stationC">站點 C</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn-submit">新增</button>
-        </form>
+  <div class="container">
+    <div class="info-group">
+      <div class="info-item">
+        <label for="inputEmployeeId">員工編號</label>
+        <input type="text" id="inputEmployeeId" placeholder="請輸入員工編號" />
+      </div>
+      <div class="info-item">
+        <label for="inputNurseName">護士姓名</label>
+        <input type="text" id="inputNurseName" placeholder="請輸入護士姓名" />
+      </div>
     </div>
+
+    <div class="stations">
+      <div class="station-box">
+        <h3>未加入站點</h3>
+        <ul id="available"></ul>
+      </div>
+
+      <div class="station-box">
+        <h3>已加入站點</h3>
+        <ul id="joined"></ul>
+      </div>
+    </div>
+
+    <div class="message" id="messageArea"></div>
+  </div>
+
+  <script>
+    (function () {
+      let isSaving = false;         // 標記是否正在儲存，以避免重複送出
+      let allStations = [];         // 暫存從後端抓到的所有站點
+
+      const $btnBack = $('#btnBack');
+      const $btnSave = $('#btnSave');
+      const $availableList = $('#available');
+      const $joinedList = $('#joined');
+      const $inputEmployeeId = $('#inputEmployeeId');
+      const $inputNurseName = $('#inputNurseName');
+      const $messageArea = $('#messageArea');
+
+      $(document).ready(async () => {
+        bindEventHandlers();
+        await loadAllStations();
+      });
+
+      function bindEventHandlers() {
+        $btnBack.on('click', () => {
+          window.location.href = 'index.html';
+        });
+
+        $btnSave.on('click', async () => {
+          if (isSaving) return;
+          await saveNewNurse();
+        });
+
+        $availableList.on('click', 'li', function () {
+          const $li = $(this);
+          moveToJoined($li);
+        });
+
+        $joinedList.on('click', 'li', function () {
+          const $li = $(this);
+          moveToAvailable($li);
+        });
+      }
+
+      async function loadAllStations() {
+        try {
+          allStations = await $.get('/api/stations');
+
+          $availableList.empty();
+          $joinedList.empty();
+
+          allStations.forEach(station => {
+            const $li = createStationLi(station.id, station.name);
+            $availableList.append($li);
+          });
+        } catch (error) {
+          showMessage('讀取站點失敗，請稍後重試', 'error');
+        }
+      }
+
+      function createStationLi(id, name) {
+        return $(`<li data-id="${id}">${name}</li>`);
+      }
+
+      function moveToJoined($li) {
+        $li.remove();           // 從 available 清單移除
+        $joinedList.append($li); // 加入到 joined 清單
+      }
+
+      function moveToAvailable($li) {
+        $li.remove();             // 從 joined 清單移除
+        $availableList.append($li); // 加回到 available 清單
+      }
+
+      function validateInputs(employeeId, nurseName, joinedCount) {
+        if (!employeeId) {
+          showMessage('請輸入員工編號', 'error');
+          return false;
+        }
+        if (!nurseName) {
+          showMessage('請輸入護士姓名', 'error');
+          return false;
+        }
+        if (joinedCount === 0) {
+          showMessage('請至少選擇一個站點', 'error');
+          return false;
+        }
+        return true;
+      }
+
+      function showMessage(text, type) {
+        $messageArea.text(text);
+        if (type === 'error') {
+          $messageArea.addClass('error').removeClass('success');
+        } else {
+          $messageArea.addClass('success').removeClass('error');
+        }
+      }
+
+      function collectJoinedStations() {
+        const stationsArr = [];
+        $joinedList.find('li').each(function () {
+          const $li = $(this);
+          stationsArr.push({
+            id: $li.data('id'),
+            name: $li.text()
+          });
+        });
+        return stationsArr;
+      }
+
+      async function saveNewNurse() {
+        const employeeId = $inputEmployeeId.val().trim();
+        const nurseName = $inputNurseName.val().trim();
+        const joinedCount = $joinedList.find('li').length;
+
+        if (!validateInputs(employeeId, nurseName, joinedCount)) {
+          return;
+        }
+
+        const payload = {
+          employeeId: employeeId,
+          name: nurseName,
+          stations: collectJoinedStations()
+        };
+
+        isSaving = true;
+        $btnSave.prop('disabled', true).text('新增中...');
+        showMessage('', '');
+
+        try {
+          await $.ajax({
+            url: '/api/nurses',
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(payload)
+          });
+
+          alert('護士新增成功');
+          window.location.href = 'nurse-list.html';
+        } catch (error) {
+          showMessage('新增護士失敗，請稍後再試', 'error');
+        } finally {
+          isSaving = false;
+          $btnSave.prop('disabled', false).text('新增');
+        }
+      }
+    })();
+  </script>
 </body>
 </html>
