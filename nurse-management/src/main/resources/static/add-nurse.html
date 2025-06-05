@@ -10,11 +10,9 @@
   <style>
     /* ---------- 全局變數與基本樣式 ---------- */
     :root {
-      --primary-color: #3498db;
-      --primary-light: #e6f0fb;
-      --primary-lighter: #c8e6ff;
-      --primary-hover: #d0e7fb;
-      --primary-hover2: #aad4fa;
+      --primary-color: #E6B204;
+      --primary-light: #F1DE96;
+      --primary-lighter: #F9E9C1;
       --bg-page: #f5faff;
       --text-color: #333;
       --border-gray: #ccc;
@@ -88,10 +86,14 @@
 
     .btn--back {
       border: none;
+      background-color: transparent;
+      color: #fff;
+      font-size: 1rem;
+      padding: var(--spacing-sm) var(--spacing-md);
     }
 
     .btn--back:hover:not(:disabled) {
-      background-color: rgba(255,255,255,0.8);
+      background-color: rgba(255,255,255,0.3);
     }
 
     /* ---------- 主容器 & 輸入框 ---------- */
@@ -160,7 +162,7 @@
     .station-box li {
       margin-bottom: var(--spacing-sm);
       padding: var(--spacing-sm);
-      background-color: var(--primary-light);
+      background-color: var(--primary-lighter);
       border-radius: var(--border-radius);
       display: flex;
       align-items: center;
@@ -170,14 +172,14 @@
     }
 
     .station-box li:hover {
-      background-color: var(--primary-hover);
+      background-color: var(--primary-light);
     }
 
     #joined li {
-      background-color: var(--primary-lighter);
+      background-color: var(--primary-light);
     }
     #joined li:hover {
-      background-color: var(--primary-hover2);
+      background-color: var(--primary-lighter);
     }
 
     .station-box ul::-webkit-scrollbar {
@@ -213,7 +215,7 @@
       margin-top: 20px;
     }
     .btn-submit:hover:not(:disabled) {
-      background-color: #2980b9;
+      background-color: #d19903;
     }
     .btn-submit:disabled {
       background-color: #95a5a6;
@@ -240,7 +242,7 @@
 
 <body>
   <header>
-    <button class="btn btn--back" id="btnBack">返回</button>
+    <button class="btn btn--back" id="btnBack">← 返回</button>
     <h2>新增護士</h2>
     <button class="btn" id="btnSave">新增</button>
   </header>
@@ -274,8 +276,8 @@
 
   <script>
     (function () {
-      let isSaving = false;         // 標記是否正在儲存，以避免重複送出
-      let allStations = [];         // 暫存從後端抓到的所有站點
+      let isSaving = false;
+      let allStations = [];
 
       const $btnBack = $('#btnBack');
       const $btnSave = $('#btnSave');
@@ -291,20 +293,24 @@
       });
 
       function bindEventHandlers() {
+        // 返回按鈕：導回 index.html
         $btnBack.on('click', () => {
           window.location.href = 'index.html';
         });
 
+        // 新增按鈕
         $btnSave.on('click', async () => {
           if (isSaving) return;
           await saveNewNurse();
         });
 
+        // 點「未加入站點」項目 → 移到已加入
         $availableList.on('click', 'li', function () {
           const $li = $(this);
           moveToJoined($li);
         });
 
+        // 點「已加入站點」項目 → 移回未加入
         $joinedList.on('click', 'li', function () {
           const $li = $(this);
           moveToAvailable($li);
@@ -314,10 +320,8 @@
       async function loadAllStations() {
         try {
           allStations = await $.get('/api/stations');
-
           $availableList.empty();
           $joinedList.empty();
-
           allStations.forEach(station => {
             const $li = createStationLi(station.id, station.name);
             $availableList.append($li);
@@ -332,13 +336,13 @@
       }
 
       function moveToJoined($li) {
-        $li.remove();           // 從 available 清單移除
-        $joinedList.append($li); // 加入到 joined 清單
+        $li.remove();
+        $joinedList.append($li);
       }
 
       function moveToAvailable($li) {
-        $li.remove();             // 從 joined 清單移除
-        $availableList.append($li); // 加回到 available 清單
+        $li.remove();
+        $availableList.append($li);
       }
 
       function validateInputs(employeeId, nurseName, joinedCount) {

@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>護士詳細資料（可更新員編與姓名）</title>
+  <title>護士詳細資料</title>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -71,12 +71,6 @@
     .btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-    }
-    .btn--back {
-      border: none;
-    }
-    .btn--back:hover:not(:disabled) {
-      background-color: rgba(255,255,255,0.8);
     }
 
     .container {
@@ -193,7 +187,7 @@
 </head>
 <body>
   <header>
-    <button class="btn btn--back" id="btnBack">返回</button>
+    <button class="btn" id="btnBack">返回</button>
     <h2>護士詳細資料</h2>
     <button class="btn" id="btnSave">儲存變更</button>
   </header>
@@ -238,9 +232,7 @@
       const $inputEmployeeId = $('#inputEmployeeId');
       const $inputNurseName = $('#inputNurseName');
 
-      // ========== 初始化流程 ==========
       $(document).ready(() => {
-        // 檢查是否有傳入 nurseId
         if (!nurseId) {
           alert('找不到護士，請從列表頁進來');
           $btnSave.prop('disabled', true);
@@ -251,21 +243,17 @@
         loadStationsAndNurse();
       });
 
-      // 綁定各種事件處理器
       function bindEventHandlers() {
-        // 返回上一頁
         $btnBack.on('click', () => {
           window.location.href = 'nurse-list.html';
         });
 
-        // 儲存按鈕
         $btnSave.on('click', async () => {
           if (isSaving) return;
           await saveNurseChanges();
           window.location.href = 'nurse-list.html';
         });
 
-        // 已加入站點：點擊取消分配
         $joinedList.on('click', 'li', function () {
           const $li = $(this);
           const sid = $li.data('id');
@@ -275,7 +263,6 @@
           unassignStation(sid, $li);
         });
 
-        // 未加入站點：點擊分配
         $availableList.on('click', 'li', function () {
           const $li = $(this);
           const sid = $li.data('id');
@@ -286,7 +273,6 @@
         });
       }
 
-      // 一次載入所有站點，接著再載入護士詳細
       async function loadStationsAndNurse() {
         try {
           const stationsData = await $.get('/api/stations');
@@ -297,26 +283,20 @@
         }
       }
 
-      // ========== 資料載入函式 ==========
 
-      // 載入護士詳細資料，並渲染加入/未加入的站點列表
       async function loadNurseDetail() {
         try {
           const nurse = await $.get(`/api/nurses/${nurseId}`);
 
-          // 填入基本欄位
           $inputEmployeeId.val(nurse.employeeId);
           $inputNurseName.val(nurse.name);
 
-          // 重置已加入的站點集合
           joinedIds.clear();
           nurse.stations.forEach((st) => joinedIds.add(st.id));
 
-          // 清空列表
           $joinedList.empty();
           $availableList.empty();
 
-          // 將所有站點依據是否已加入分開到不同 <ul>
           allStations.forEach((st) => {
             const $li = $(`<li data-id="${st.id}">${st.name}</li>`);
             if (joinedIds.has(st.id)) {
@@ -330,9 +310,7 @@
         }
       }
 
-      // ========== 分配／取消分配站點 ==========
 
-      // 分配站點給護士
       async function assignStation(sid, $li) {
         try {
           await $.ajax({
@@ -340,8 +318,8 @@
             type: 'POST'
           });
           joinedIds.add(sid);
-          $li.remove();               // 從「未加入」移除
-          $joinedList.append($li);     // 加到「已加入」
+          $li.remove();
+          $joinedList.append($li);
         } catch (err) {
           alert('分配站點失敗，請稍後再試');
         } finally {
@@ -357,8 +335,8 @@
             type: 'DELETE'
           });
           joinedIds.delete(sid);
-          $li.remove();               // 從「已加入」移除
-          $availableList.append($li);  // 加到「未加入」
+          $li.remove();
+          $availableList.append($li);
         } catch (err) {
           alert('取消分配站點失敗，請稍後再試');
         } finally {

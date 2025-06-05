@@ -1,30 +1,32 @@
 package com.showxd.nurse_management.service;
 
 import com.showxd.nurse_management.dto.NurseDto;
-import com.showxd.nurse_management.dto.StationDto;
 import com.showxd.nurse_management.model.Nurse;
+import com.showxd.nurse_management.model.NurseStationAssignment;
+import com.showxd.nurse_management.model.NurseStationId;
 import com.showxd.nurse_management.model.Station;
 import com.showxd.nurse_management.repository.NurseRepository;
+import com.showxd.nurse_management.repository.NurseStationAssignmentRepository;
 import com.showxd.nurse_management.repository.StationRepository;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class NurseService {
 
     private final NurseRepository nurseRepository;
     private final StationRepository stationRepository;
+    private final NurseStationAssignmentRepository assignmentRepository;
 
     public NurseService(NurseRepository nurseRepository,
-                        StationRepository stationRepository) {
+                        StationRepository stationRepository,
+                        NurseStationAssignmentRepository assignmentRepository) {
         this.nurseRepository = nurseRepository;
         this.stationRepository = stationRepository;
+        this.assignmentRepository = assignmentRepository;
     }
 
     /**
@@ -49,73 +51,59 @@ public class NurseService {
     }
 
     /**
-     * 根據 ID 刪除護士
+     * 刪除護士
      */
     public void deleteNurse(Long id) {
         nurseRepository.deleteById(id);
     }
 
     /**
-     * 將指定的護士與站點做關聯
-     * @param nurseId
-     * @param stationId
-     * @return 修改後的 Nurse
+     * 指派某位護士到指定站點
      */
     @Transactional
-    public Optional<Nurse> assignStation(Long nurseId, Long stationId) {
+    public boolean assignStation(Long nurseId, Long stationId) {
         Optional<Nurse> optNurse = nurseRepository.findById(nurseId);
         Optional<Station> optStation = stationRepository.findById(stationId);
 
         if (optNurse.isEmpty() || optStation.isEmpty()) {
-            return Optional.empty();
+            return false;
         }
 
         Nurse nurse = optNurse.get();
         Station station = optStation.get();
 
-        if (!nurse.getStations().contains(station)) {
-            nurse.getStations().add(station);
-            station.getNurses().add(nurse);
-            nurseRepository.save(nurse);
-            stationRepository.save(station);
+        NurseStationId pk = new NurseStationId(nurseId, stationId);
+        if (assignmentRepository.existsById(pk)) {
+            return true;
         }
 
-        return Optional.of(nurse);
+        NurseStationAssignment assignment = new NurseStationAssignment(nurse, station);
+        assignmentRepository.save(assignment);
+        return true;
     }
 
     /**
-     * 取消指定護士與站點的關聯
-     * @param nurseId
-     * @param stationId
-     * @return 修改後的 Nurse
+     * 取消某位護士與指定站點的關聯
      */
     @Transactional
-    public Optional<Nurse> unassignStation(Long nurseId, Long stationId) {
-        Optional<Nurse> optNurse = nurseRepository.findById(nurseId);
-        Optional<Station> optStation = stationRepository.findById(stationId);
-
-        if (optNurse.isEmpty() || optStation.isEmpty()) {
-            return Optional.empty();
+    public boolean unassignStation(Long nurseId, Long stationId) {
+        NurseStationId pk = new NurseStationId(nurseId, stationId);
+        if (!assignmentRepository.existsById(pk)) {
+            return false;
         }
-
-        Nurse nurse = optNurse.get();
-        Station station = optStation.get();
-
-        if (nurse.getStations().contains(station)) {
-            nurse.getStations().remove(station);
-            station.getNurses().remove(nurse);
-            nurseRepository.save(nurse);
-            stationRepository.save(station);
-        }
-
-        return Optional.of(nurse);
+        assignmentRepository.deleteById(pk);
+        return true;
     }
 
     /**
-     * 根據 NurseDto 更新指定 ID 的 Nurse。
-     * @param id         護士主鍵
-     * @param updatedDto 更新的資料傳輸物件
-     * @return 更新後的
+     * 取得某位護士所有的 StationAssignment
+     */
+    public List<NurseStationAssignment> getAssignmentsByNurse(Long nurseId) {
+        return assignmentRepository.findByNurseId(nurseId);
+    }
+
+    /**
+     * 根據 NurseDto 更新指定 ID 的 Nurse
      */
     @Transactional
     public Optional<Nurse> updateNurseWithDto(Long id, NurseDto updatedDto) {
@@ -124,14 +112,34 @@ public class NurseService {
                 existingNurse.setEmployeeId(updatedDto.getEmployeeId());
                 existingNurse.setName(updatedDto.getName());
 
-                Set<Station> newStations = new HashSet<>();
+                Set<Long> newStationIds = Collections.emptySet();
                 if (updatedDto.getStations() != null) {
-                    for (StationDto sd : updatedDto.getStations()) {
-                        Long stationId = sd.getId();
-                        stationRepository.findById(stationId).ifPresent(newStations::add);
+                    newStationIds = updatedDto.getStations().stream()
+                        .map(NurseDto.StationInfo::getId)
+                        .collect(Collectors.toSet());
+                }
+
+                Set<NurseStationAssignment> existingAssignments = new HashSet<>(existingNurse.getStationAssignments());
+
+                for (NurseStationAssignment assignment : existingAssignments) {
+                    Long stationId = assignment.getStation().getId();
+                    if (!newStationIds.contains(stationId)) {
+                        existingNurse.getStationAssignments().remove(assignment);
+                        assignment.getStation().getNurseAssignments().remove(assignment);
+                        assignmentRepository.delete(assignment);
+                    } else {
+                        newStationIds.remove(stationId);
                     }
                 }
-                existingNurse.setStations(newStations);
+
+                for (Long sid : newStationIds) {
+                    stationRepository.findById(sid).ifPresent(station -> {
+                        NurseStationAssignment newAssignment = new NurseStationAssignment(existingNurse, station);
+                        existingNurse.getStationAssignments().add(newAssignment);
+                        station.getNurseAssignments().add(newAssignment);
+                        assignmentRepository.save(newAssignment);
+                    });
+                }
 
                 return nurseRepository.save(existingNurse);
             });
