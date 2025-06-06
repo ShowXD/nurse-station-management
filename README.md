@@ -115,7 +115,7 @@ DELETE /api/stations/{stationId}/nurses/{nurseId}
 ## 額外文件連結
 
 * `docs/API_FULL.md`：完整 API 規範（包含 Request/Response 範例、錯誤碼）。
-* `docs/DB_SCHEMA.md`：完整資料庫建表 SQL。
+* `docs/nurse_management_dump.sql`：完整資料庫建表 SQL。
 * `docs/screenshots/`：所有前端畫面截圖。
 
 ---
